@@ -1,16 +1,17 @@
 # Imports
 import os 
 import discord
+import aiohttp
+
+from discord import app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
-
-import aiohttp
-# import requests
 
 load_dotenv()
 
 intents = discord.Intents.default()
 intents.message_content = True
+
 
 ### ---------- discord.Client ---------- ### 
 # Represents a client connection that connects to Discord. 
@@ -25,6 +26,20 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix = "$", intents = intents)
 
+
+# On start up
+# @bot.event
+# async def on_ready():
+#     print("Bot is running...")
+    # try:
+    #     synced = await bot.tree.sync()
+    #     print(f"Synced {len(synced)} command(s).")
+    # except Exception as e:
+    #     print(e)
+
+
+### ---------- ($) commands ---------- ### 
+
 # Greeting test
 @bot.command(name = "hello")
 async def greeting(ctx):
@@ -35,9 +50,11 @@ async def greeting(ctx):
 @bot.command()
 async def print(ctx, *args):
     response = ""
-    for arg in args:
-        response = response + " " + arg
-    await ctx.channel.send(response)
+    if len(args):
+        for arg in args:
+            response = response + " " + arg
+        await ctx.channel.send(response)
+    return
 
 # API request test
 @bot.command(name = "dog")
@@ -48,6 +65,19 @@ async def dog_image(ctx):
             embed = discord.Embed(title = "Woof")
             embed.set_image(url = data['message'])
             await ctx.send(embed = embed)
+
+
+### ---------- Forward slash commands ---------- ### 
+
+@bot.tree.command(name="hello")
+async def hello(interaction:discord.Interaction):
+    await interaction.response.send_message(f"Hey {interaction.user.mention}! This is a slash command", ephemeral=True)
+
+@bot.tree.command(name="say")
+@app_commands.describe(thing_to_say = "What should I say?")
+async def say(interaction:discord.Interaction, thing_to_say:str):
+    await interaction.response.send_message(f"{interaction.user.name} said: `{thing_to_say}`")
+
 
 # Run the bot
 bot.run(os.environ.get('TOKEN'))
