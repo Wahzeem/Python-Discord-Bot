@@ -93,7 +93,7 @@ async def dog(interaction: discord.Interaction):
 async def steam_search(interaction:discord.Interaction, key_word:str):
     url = f"https://steam2.p.rapidapi.com/search/{key_word}/page/1"
     headers = {
-	"X-RapidAPI-Key": "66d7718980msh3825a3ff4926de5p16af01jsna73efc092cc8",
+	"X-RapidAPI-Key": os.environ.get('RAPID_API_KEY'),
 	"X-RapidAPI-Host": "steam2.p.rapidapi.com"
     }
     async with aiohttp.ClientSession() as cs:
