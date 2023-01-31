@@ -80,12 +80,26 @@ async def say(interaction:discord.Interaction, thing_to_say:str):
 
 @bot.tree.command(name="dog")
 async def dog(interaction: discord.Interaction):
-     async with aiohttp.ClientSession() as cs:
-        async with cs.get("https://dog.ceo/api/breeds/image/random") as r:
+    url = "https://dog.ceo/api/breeds/image/random"
+    async with aiohttp.ClientSession() as cs:
+        async with cs.get(url) as r:
             data = await r.json()
             embed = discord.Embed(title = "Woof")
             embed.set_image(url = data['message'])
             await interaction.response.send_message(embed = embed)
+
+@bot.tree.command(name="steam_search")
+@app_commands.describe(key_word = "What to search?")
+async def steam_search(interaction:discord.Interaction, key_word:str):
+    url = f"https://steam2.p.rapidapi.com/search/{key_word}/page/1"
+    headers = {
+	"X-RapidAPI-Key": "66d7718980msh3825a3ff4926de5p16af01jsna73efc092cc8",
+	"X-RapidAPI-Host": "steam2.p.rapidapi.com"
+    }
+    async with aiohttp.ClientSession() as cs:
+        async with cs.get(url, headers = headers) as r:
+            data = await r.json()
+            await interaction.response.send_message(str(data[0]['url']))
 
 
 # Run the bot
