@@ -28,14 +28,14 @@ bot = commands.Bot(command_prefix = "$", intents = intents)
 
 
 # On start up
-# @bot.event
-# async def on_ready():
-#     print("Bot is running...")
-    # try:
-    #     synced = await bot.tree.sync()
-    #     print(f"Synced {len(synced)} command(s).")
-    # except Exception as e:
-    #     print(e)
+@bot.event
+async def on_ready():
+    print("Bot is running...")
+    try:
+        synced = await bot.tree.sync()
+        print(f"Synced {len(synced)} command(s).")
+    except Exception as e:
+        print(e)
 
 
 ### ---------- ($) commands ---------- ### 
@@ -77,6 +77,15 @@ async def hello(interaction:discord.Interaction):
 @app_commands.describe(thing_to_say = "What should I say?")
 async def say(interaction:discord.Interaction, thing_to_say:str):
     await interaction.response.send_message(f"{interaction.user.name} said: `{thing_to_say}`")
+
+@bot.tree.command(name="dog")
+async def dog(interaction: discord.Interaction):
+     async with aiohttp.ClientSession() as cs:
+        async with cs.get("https://dog.ceo/api/breeds/image/random") as r:
+            data = await r.json()
+            embed = discord.Embed(title = "Woof")
+            embed.set_image(url = data['message'])
+            await interaction.response.send_message(embed = embed)
 
 
 # Run the bot
