@@ -69,15 +69,18 @@ async def dog_image(ctx):
 
 ### ---------- Forward slash commands ---------- ### 
 
+# Returns a greeting along with a tagged/mentioned username of the user
 @bot.tree.command(name="hello")
 async def hello(interaction:discord.Interaction):
-    await interaction.response.send_message(f"Hey {interaction.user.mention}! This is a slash command", ephemeral=True)
+    await interaction.response.send_message(f"Hey {interaction.user.mention}!", ephemeral=True)
 
+# The bot posts whatever the user passes through as an argument
 @bot.tree.command(name="say")
 @app_commands.describe(thing_to_say = "What should I say?")
 async def say(interaction:discord.Interaction, thing_to_say:str):
     await interaction.response.send_message(f"{interaction.user.name} said: `{thing_to_say}`")
 
+# Grabs a random image of a dog
 @bot.tree.command(name="dog")
 async def dog(interaction: discord.Interaction):
     url = "https://dog.ceo/api/breeds/image/random"
@@ -88,6 +91,7 @@ async def dog(interaction: discord.Interaction):
             embed.set_image(url = data['message'])
             await interaction.response.send_message(embed = embed)
 
+# Passes keywords as a parameter to search through the steam API and returns the first game found.
 @bot.tree.command(name="steam_search")
 @app_commands.describe(key_word = "What to search?")
 async def steam_search(interaction:discord.Interaction, key_word:str):
