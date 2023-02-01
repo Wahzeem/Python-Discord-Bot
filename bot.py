@@ -108,5 +108,26 @@ async def steam_search(interaction:discord.Interaction, key_word:str):
     except Exception as e:
         await interaction.response.send_message(f"Unable to find `{key_word}`.", ephemeral=True)
 
+# Translator API
+@bot.tree.command(name="translate_text")
+@app_commands.describe(language = "Which language?", source_text = "What would you like translated?")
+async def translate_text(interaction:discord.Interaction, language:str, source_text:str):
+    url = "https://text-translator2.p.rapidapi.com/translate"
+    payload = f"source_language=en&target_language={language}&text={source_text}"
+    headers = {
+    "content-type": "application/x-www-form-urlencoded",
+	"X-RapidAPI-Key": os.environ.get('RAPID_API_KEY'),
+	"X-RapidAPI-Host": "text-translator2.p.rapidapi.com"
+    }
+    try:
+        async with aiohttp.ClientSession() as cs:
+            async with cs.post(url, data = payload, headers = headers) as r:
+                data = await r.json()
+                await interaction.response.send_message(f"{data['data']['translatedText']}")
+    except Exception as e:
+        await interaction.response.send_message("Failed attempt", ephemeral=True)
+
+
+
 # Run the bot
 bot.run(os.environ.get('TOKEN'))
