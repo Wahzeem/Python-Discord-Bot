@@ -40,7 +40,7 @@ async def on_ready():
 
 ### ---------- ($) commands ---------- ### 
 
-# Greeting test
+# Greeting
 @bot.command(name = "hello")
 async def greeting(ctx):
     username = str(ctx.author).split('#')[0]
@@ -96,11 +96,13 @@ async def steam_search(interaction:discord.Interaction, key_word:str):
 	"X-RapidAPI-Key": os.environ.get('RAPID_API_KEY'),
 	"X-RapidAPI-Host": "steam2.p.rapidapi.com"
     }
-    async with aiohttp.ClientSession() as cs:
-        async with cs.get(url, headers = headers) as r:
-            data = await r.json()
-            await interaction.response.send_message(str(data[0]['url']))
-
+    try:
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(url, headers = headers) as r:
+                data = await r.json()
+                await interaction.response.send_message(str(data[0]['url']))
+    except Exception as e:
+        await interaction.response.send_message(f"Unable to find `{key_word}`.", ephemeral=True)
 
 # Run the bot
 bot.run(os.environ.get('TOKEN'))
